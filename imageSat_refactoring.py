@@ -11,6 +11,7 @@ import io
 
 import rasterio
 import rasterio.plot
+from datetime import datetime
 
 import numpy as np
 from scipy.optimize import nnls
@@ -121,6 +122,42 @@ def fetch_assets(session, aoi_json, max_cloud_cover_pct=30):
     response = session.get(url, params=query)
     return response.json()
 
+def filtered_assets(assets_input):
+    if "assets" not in assets_input or not isinstance(assets_input["assets"], list):
+        print("Format incorrect des assets.")
+        return None
+
+    assets = []
+    
+    for asset in assets_input["assets"]:
+        try:
+            asset_id = asset["id"]
+            start_time = asset["startTime"]
+            cloud_cover = float(asset["properties"]["CLOUDY_PIXEL_PERCENTAGE"])
+
+            assets.append({
+                "id": asset_id,
+                "start_time": datetime.fromisoformat(start_time.replace("Z", "")),  # Convertir en datetime
+                "cloud_cover": cloud_cover
+            })
+        except (KeyError, ValueError) as e:
+            print(f"Erreur lors du traitement d'un asset : {e}")
+            continue
+
+    if not assets:
+        print("Aucun asset valide trouvé.")
+        return None
+
+    # Trier par couverture nuageuse croissante, puis par start_time décroissant
+    best_asset = min(assets, key=lambda x: (x["cloud_cover"], -x["start_time"].timestamp()))
+
+    print(f"Meilleur asset trouvé : {best_asset['id']} | {best_asset['start_time']} | {best_asset['cloud_cover']}% de couverture nuageuse")
+    
+    return best_asset["id"]
+
+
+
+
 def create_json_tile(data_input):
     # Polygon around AOI
     TILE_JSON = {
@@ -209,9 +246,12 @@ def main():
         print(f"Error: {assets['error']['message']}")
         return
     
+    ASSET_ID = filtered_assets(assets)
+    assert(ASSET_ID)
+    
     # Fetch Image Data
     print("Fetch Image Data")
-    ASSET_ID = 'COPERNICUS/S2/20250218T082031_20250218T082936_T36RXV'
+    
     image_content = fetch_image_data(session, ASSET_ID, polygon_json, ['B3','B4', 'B8', 'B11'])
    
     
