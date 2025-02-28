@@ -1,0 +1,11 @@
+Usage
+
+Firstly ,  connect in this https://geojson.io/ website .
+
+Define a point of interest on the map .
+
+Define a polygon around the point of interest 
+
+The site generates an output file in the format recording your actions, which you must save to pass as an argument to the main function, updating the variable with the name you have chosen input_from_geoson. 
+
+This code manages a single point of interest and a single polygon. 
