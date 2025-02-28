@@ -65,6 +65,7 @@ class GeoProcessor:
         return coordinates_aio, coordinates_polygone
 
     def calculate_centroid(self, polygon):
+        #todo : add input argument validators
         x_coords = [point[0] for point in polygon]
         y_coords = [point[1] for point in polygon]
         centroid_x = sum(x_coords) / len(polygon)
@@ -77,18 +78,21 @@ class GeoProcessor:
         return coords
 
     def create_json_tile(self, data_input):
+        #todo : add input argument validators
         return {
             "type": "Polygon",
             "coordinates": data_input
         }
     
     def create_json_aoi(self, data_input):
+        #todo : add input argument validators
         return {
             "type": "Point",
             "coordinates": data_input[0]
         }
 
     def fetch_assets(self, aoi_json, max_cloud_cover_pct=30):
+        #todo : add input argument validators
         filters = [
             'startTime > "2024-07-01T00:00:00.000Z"',
             'endTime < "2025-09-01T00:00:00.000Z"',
@@ -101,6 +105,7 @@ class GeoProcessor:
         return response.json()
 
     def filtered_assets(self, assets_input):
+        #todo : add input argument validators
         if "assets" not in assets_input or not isinstance(assets_input["assets"], list):
             print("Format incorrect des assets.")
             return None
@@ -132,6 +137,7 @@ class GeoProcessor:
         return best_asset["id"]
 
     def fetch_image_data(self, asset_id, region, bands, width=800, height=800):
+        #todo : add input argument validators
         url = f'{EE_PUBLIC}/assets/{asset_id}:getPixels'
         body = {
             'fileFormat': 'GEO_TIFF',
@@ -145,6 +151,7 @@ class GeoProcessor:
         return response.content
 
     def process_image_data(self, image_content, band):
+        #todo : add input argument validators
         geotiff = rasterio.MemoryFile(io.BytesIO(image_content)).open()
         pixels = {
             'B2': geotiff.read(1),
@@ -159,14 +166,13 @@ class GeoProcessor:
         return geotiff, pixels
 
     def calculate_indices(self, pixels):
+        #todo : add input argument validators
         red = pixels['B4'].astype(float)
         nir = pixels['B8'].astype(float)
         swir = pixels['B11'].astype(float)
-        
         ndvi = (nir - red) / (nir + red)
         ndbi = (swir - nir) / (swir + nir)
         mndwi = (pixels['B3'].astype(float) - swir) / (pixels['B3'].astype(float) + swir)
-        
         bai = 1 / ((0.1 - red) ** 2 + (0.06 - swir) ** 2)
         rationir_swir = nir / swir
         ratioswir_nir = swir / nir
@@ -174,6 +180,7 @@ class GeoProcessor:
         return ndvi, ndbi, mndwi, bai, rationir_swir, ratioswir_nir
 
     def compute_TCT(self, pixels):
+        #todo : add input argument validators
         B2_band = pixels['B2'].astype(float)
         B3_band = pixels['B3'].astype(float)
         B4_band = pixels['B4'].astype(float)
@@ -187,6 +194,7 @@ class GeoProcessor:
         return Br, Gr, We
 
     def display_TCT(self, r_in, g_in, w_in):
+        #todo : add input argument validators
         fig, axes = plt.subplots(1, 3, figsize=(12, 6))
         ax_iter = axes.flat
         rasterio.plot.show(r_in, ax=next(ax_iter), cmap='gray', title='TCT Brightness')
@@ -195,6 +203,7 @@ class GeoProcessor:
         plt.show()
 
     def compute_sma(self, in_pixels):
+        #todo : add input argument validators
         red = in_pixels['B4'].astype(np.float32)
         nir = in_pixels['B8'].astype(np.float32)
         swir = in_pixels['B11'].astype(np.float32)
@@ -210,6 +219,7 @@ class GeoProcessor:
         return fractions
 
     def save_sma(self, in_fractions, outfile_tif):
+        #todo : add input argument validators
         meta = {
             'driver': 'GTiff',
             'count': 3,
@@ -226,6 +236,7 @@ class GeoProcessor:
         return True
 
     def display_tif_picture_with_3_bands(self, input_file):
+        #todo : add input argument validators
         with rasterio.open(input_file) as src:
             band1 = src.read(1)
             band2 = src.read(2)
@@ -241,6 +252,7 @@ class GeoProcessor:
         plt.show()
 
     def compute_VIF(self, in_pixels):
+        #todo : add input argument validators
         red, nir, swir = 'B4', 'B8', 'B11'
         ndvi = (in_pixels[nir].astype(float) - in_pixels[red].astype(float)) / (in_pixels[nir] + in_pixels[red])
         swir_band = in_pixels['B11'].astype(float)
@@ -252,9 +264,11 @@ class GeoProcessor:
         return vif, ndvi, ndbi
 
     def computeCenterMapCenter(self, aoi):
+        #todo : add input argument validators
         return list(reversed(aoi['coordinates']))
 
     def show_aoi_map(self, ASSET_ID, map_center):
+        #todo : add input argument validators
         url = f'{EE_PUBLIC}/assets/{ASSET_ID}'
         response = self.session.get(url)
         asset = response.json()
@@ -266,6 +280,7 @@ class GeoProcessor:
         webbrowser.open(map_path)
 
     def setup_folium(self, location, zoom=None, width=None, height=None):
+        #todo : add input argument validators
         fig = folium.Figure(width=width, height=height)
         map = folium.Map(location=location, zoom_start=zoom)
         map.add_to(fig)
