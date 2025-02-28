@@ -1,0 +1,28 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: 24.2.0  # Remplacez par la dernière version stable
+    hooks:
+      - id: black
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 6.1.0  # Remplacez par la dernière version stable
+    hooks:
+      - id: flake8
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0  # Remplacez par la dernière version stable
+    hooks:
+      - id: mypy
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0  # Remplacez par la dernière version stable
+    hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  - repo: https://github.com/pre-commit/mirrors-autopep8
+    rev: v2.0.2  # Remplacez par la dernière version stable
+    hooks:
+      - id: autopep8
+        args: [--max-line-length=88, --aggressive]
