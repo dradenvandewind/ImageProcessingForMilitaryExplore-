@@ -20,6 +20,9 @@ import pyproj
 import shapely.geometry, shapely.ops
 from google.auth.transport.requests import AuthorizedSession
 from google.oauth2 import service_account
+KEY = 'client_secret_705965637696-lpdn9g1tdeil70sq22sm7rjrklm17au7.apps.googleusercontent.com.json'
+EE_API = 'https://earthengine.googleapis.com/v1'
+EE_PUBLIC = f'{EE_API}/projects/earthengine-public'
 
 class GeoProcessor:
     def __init__(self, key_path):
