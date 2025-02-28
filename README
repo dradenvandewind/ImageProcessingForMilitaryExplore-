@@ -1,6 +1,34 @@
 Usage
+Firstly,
 
-Firstly ,  connect in this https://geojson.io/ website .
+How do I get this JSON file? to populate KEY value
+Create a project in Google Cloud Platform (GCP):
+
+Go to Google Cloud Console.
+
+Create a new project or select an existing one.
+
+Activate the Google Earth Engine API:
+
+In the GCP console, go to “APIs and services” > “Library”.
+
+Search for “Google Earth Engine API” and activate it.
+
+Create a service account:
+
+Go to “API and services” > “Login”.
+
+Click on “Create credentials” and select “Service account”.
+
+Give your service account a name and click “Create”.
+
+Download the JSON file:
+
+Once the service account has been created, click on it.
+
+
+
+Secondly ,  connect in this https://geojson.io/ website .
 
 Define a point of interest on the map .
 
